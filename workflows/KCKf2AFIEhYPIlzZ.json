@@ -1,0 +1,93 @@
+{
+  "updatedAt": "2026-09-17T14:42:24.246Z",
+  "createdAt": "2026-09-17T13:39:02.859Z",
+  "id": "KCKf2AFIEhYPIlzZ",
+  "name": "B1 Hello webhook",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "hello",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "dd2fbc6b-e341-4d76-884e-472b58bfe555",
+      "name": "Webhook",
+      "webhookId": "05a20c85-294b-4e25-8281-51798c98e8f8"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \n  \"status\": \"ok\", \n  \"received\": \"{{ $now.toISO() }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "9f063706-a751-4241-9b2d-3890ae7f2759",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "2aec041c-68db-419c-b4a3-ef55bf0edf99",
+  "activeVersionId": "2aec041c-68db-419c-b4a3-ef55bf0edf99",
+  "versionCounter": 54,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-09-17T13:39:02.863Z",
+      "createdAt": "2026-09-17T13:39:02.863Z",
+      "role": "workflow:owner",
+      "workflowId": "KCKf2AFIEhYPIlzZ",
+      "projectId": "6r4VBJKb3I3TbPa7",
+      "project": {
+        "updatedAt": "2026-09-17T10:32:25.068Z",
+        "createdAt": "2026-09-17T09:57:17.421Z",
+        "id": "6r4VBJKb3I3TbPa7",
+        "name": "Malcolm Abiad <da.malcolmj@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "35d2bc97-2484-4920-b65d-c1934c5177e0"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "B1 Version 2aec041c",
+    "description": ""
+  }
+}

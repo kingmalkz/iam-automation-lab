@@ -1,0 +1,15 @@
+# Local changes to the get-n8n.sh stack.
+# compose.yml is installer-managed; keep every edit here.
+services:
+  n8n:
+    restart: unless-stopped
+    ports: !override
+      - '127.0.0.1:5678:5678'
+  runners:
+    restart: unless-stopped
+  sandbox-api:
+    restart: unless-stopped
+  sandbox-runner-1:
+    restart: unless-stopped
+  searxng:
+    restart: unless-stopped
