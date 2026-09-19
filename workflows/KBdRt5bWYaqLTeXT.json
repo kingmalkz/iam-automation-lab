@@ -1,0 +1,226 @@
+{
+  "updatedAt": "2026-09-19T14:14:37.420Z",
+  "createdAt": "2026-09-19T13:41:39.763Z",
+  "id": "KBdRt5bWYaqLTeXT",
+  "name": "B2 Scheduled KEV security digest by email",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 18
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "47c6c4f4-496e-4058-8756-eea0e6c6feb7",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "4af91c79-36f4-467f-877e-45cee0cb8685",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "vulnerabilities",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "id": "8e7a24af-aa79-48c2-a686-8d14501fddfc",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "33058859-b7be-4197-a492-9618e362a93b",
+              "leftValue": "={{ $json.dateAdded }}",
+              "rightValue": "={{ $now.minus({ days: 7 }).toISODate() }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        0
+      ],
+      "id": "5b4df054-e33e-4f09-96bb-0a8b71d79c5e",
+      "name": "Filter",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build an HTML table; ignore the empty item Filter emits on quiet weeks\nconst rows = $input.all().map(i => i.json).filter(v => v.cveID);\nconst tr = rows.map(v =>\n  `<tr><td>${v.cveID}</td><td>${v.vendorProject}</td><td>${v.product}</td><td>${v.dateAdded}</td><td>${v.dueDate}</td></tr>`\n).join('');\nconst html = rows.length\n  ? `<p>${rows.length} KEV entries added in the last 7 days.</p>\n     <table border=\"1\" cellpadding=\"4\">\n     <tr><th>CVE</th><th>Vendor</th><th>Product</th><th>Added</th><th>Due</th></tr>${tr}</table>`\n  : '<p>No KEV entries added in the last 7 days.</p>';\nreturn [{ json: { html, count: rows.length } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        0
+      ],
+      "id": "d7022fa0-635f-47ef-b5bb-07fc3b925e75",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "da.malcolmj@gmail.com",
+        "subject": "=KEV digest {{ $now.toISODate() }} ({{ $json.count }})",
+        "message": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1120,
+        0
+      ],
+      "id": "b99195d9-df98-4224-b32e-429d612c8d23",
+      "name": "Send a message",
+      "webhookId": "e1dc3961-074d-4aa1-8417-9b6cc2eff179",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "U5SYuqjtQMeBELIf",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "291d3005-bf47-40ed-8af2-0c0d4aec8d02",
+  "activeVersionId": null,
+  "versionCounter": 57,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-09-19T13:41:39.770Z",
+      "createdAt": "2026-09-19T13:41:39.770Z",
+      "role": "workflow:owner",
+      "workflowId": "KBdRt5bWYaqLTeXT",
+      "projectId": "6r4VBJKb3I3TbPa7",
+      "project": {
+        "updatedAt": "2026-09-17T10:32:25.068Z",
+        "createdAt": "2026-09-17T09:57:17.421Z",
+        "id": "6r4VBJKb3I3TbPa7",
+        "name": "Malcolm Abiad <da.malcolmj@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "35d2bc97-2484-4920-b65d-c1934c5177e0"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}
